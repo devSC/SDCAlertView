@@ -8,7 +8,7 @@ final class ActionCell: UICollectionViewCell {
     @IBOutlet private var highlightedBackgroundView: UIView!
 
     private var textColor: UIColor?
-
+    private var action: AlertAction?
     var isEnabled = true {
         didSet { self.titleLabel.isEnabled = self.isEnabled }
     }
@@ -22,8 +22,12 @@ final class ActionCell: UICollectionViewCell {
 
         self.textColor = visualStyle.textColor(for: action)
         self.titleLabel.font = visualStyle.font(for: action)
-        self.titleLabel.textColor = self.textColor ?? self.tintColor
-        self.titleLabel.attributedText = action.attributedTitle
+        if let attributedTitle = action.attributedTitle {
+            self.titleLabel.attributedText = attributedTitle
+        } else {
+            self.titleLabel.textColor = self.textColor ?? self.tintColor
+            self.titleLabel.text = action.title
+        }
         self.titleLabel.textAlignment =
             action.imageView.image != nil || action.accessoryView != nil ? .left : .center
 
@@ -40,11 +44,14 @@ final class ActionCell: UICollectionViewCell {
         }
 
         self.setupAccessibility(using: action)
+        self.action = action
     }
 
     override func tintColorDidChange() {
         super.tintColorDidChange()
-        self.titleLabel.textColor = self.textColor ?? self.tintColor
+        if action?.attributedTitle == nil {
+            self.titleLabel.textColor = self.textColor ?? self.tintColor
+        }
     }
 
     private func constrainSecondaryView(_ view: UIView) {

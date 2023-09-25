@@ -38,9 +38,11 @@ public class AlertAction: NSObject {
 
     /// The plain title for the action. Uses `attributedTitle` directly.
     @objc
+    private(set) var _title: String?
+
     private(set) public var title: String? {
-        get { return self.attributedTitle?.string }
-        set { self.attributedTitle = newValue.map(NSAttributedString.init) }
+        get { return _title ?? self.attributedTitle?.string }
+        set { _title = newValue }
     }
 
     /// The stylized title for the action.
